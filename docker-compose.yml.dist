@@ -3,7 +3,7 @@ web:
   ports:
     - "8081:80"
   volumes:
-    - ./app:/var/www
+    - ./../paulusBibleViever:/var/www
     - ./configuration/vhost.conf:/etc/nginx/conf.d/vhost.conf
   links:
     - php
@@ -11,18 +11,32 @@ php:
   image: nmcteam/php56
   volumes:
     - ./configuration/php-fpm.conf:/etc/php5/fpm/php-fpm.conf
-    - ./app:/var/www
+    - ./../paulusBibleViever:/var/www
   links:
-    - db
-db:
+    - db_default
+    - db_sso
+db_default:
   image: sameersbn/mysql
   ports:
    - 3311:3306
   volumes:
-   - ./mysql:/var/lib/mysql
+   - ./mysql_default:/var/lib/mysql
   environment:
-   - DB_NAME=lo10
-   - DB_USER=lo10
-   - DB_PASS=lo10
+   - DB_NAME=default
+   - DB_USER=root
+   - DB_PASS=root
+   - DB_REMOTE_ROOT_NAME=root
+   - DB_REMOTE_ROOT_PASS=root
+db_sso:
+  image: sameersbn/mysql
+  ports:
+   - 3312:3306
+  volumes:
+   - ./mysql_sso:/var/lib/mysql
+   - ./../paulusBibleViever:/var/www
+  environment:
+   - DB_NAME=default
+   - DB_USER=root
+   - DB_PASS=root
    - DB_REMOTE_ROOT_NAME=root
    - DB_REMOTE_ROOT_PASS=root
